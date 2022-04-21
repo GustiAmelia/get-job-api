@@ -10,16 +10,36 @@ const defaultConfig = {
 const jobModel = {
     getAllJob : (query) =>{
         return new Promise((resolve, reject) => {
+            const
+            {
+                page=1,
+                limit=2,
+                description = "",
+                location="",
+                full_time=false
+            } = query
+            const offset = (page-1)*limit
             const req = http.request({...defaultConfig, path:'/api/recruitment/positions.json'}, (res)=>{
-                // res.setEncoding('utf8')
-                res.setEncoding('utf-8')
+                let data = ''
+                res.setEncoding('utf8')
                 res.on('data', (chunk) => {
-                    resolve({
-                        data : chunk
-                    })
+                    data += chunk
                   });
                   res.on('end', () => {
-                    console.log('No more data in response.');
+                    let dataFiltered =  JSON.parse(data).filter(item => item.location.includes(location) && item.description.includes(description) && (
+                        full_time ? item.type.includes("Full Time") : item.type.includes("")
+                    ))
+                    let newdata = [...dataFiltered]
+                    let result = newdata.splice(offset, limit)
+
+                    resolve({
+                        data : result,
+                        page,
+                        limit,
+                        count : result.length,
+                        totalData:dataFiltered.length,
+                        
+                    })
                   });
             })
 

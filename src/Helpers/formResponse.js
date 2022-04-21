@@ -3,7 +3,7 @@ const formResponse ={
         const response={
             isSuccess : true,
             status : status,
-            results : results
+            data : results
         }
         res.json(response);
     },
@@ -11,7 +11,7 @@ const formResponse ={
         const response={
             isSuccess : false,
             status : status,
-            results : error
+            data : error
         }
         res.json(response);
     },
